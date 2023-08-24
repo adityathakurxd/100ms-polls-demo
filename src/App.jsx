@@ -1,18 +1,44 @@
 import Footer from "./Footer";
 import {
   selectIsConnectedToRoom,
+  selectLocalPeerID,
   useHMSActions,
+  HMSNotificationTypes,
   useHMSStore,
+  useHMSNotifications,
 } from "@100mslive/react-sdk";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import JoinForm from "./JoinForm";
 import Conference from "./Conference";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import PollForm from "./Components/Poll/PollForm";
 import { Button } from "@100mslive/roomkit-react";
-
+import "./App.css";
+import ViewPoll from "./Components/Poll/ViewPoll";
 export default function App() {
   const isConnected = useHMSStore(selectIsConnectedToRoom);
   const hmsActions = useHMSActions();
+  const localPeerID = useHMSStore(selectLocalPeerID);
+  const notification = useHMSNotifications();
   // const { pollInView: pollID, widgetView, setWidgetState } = useWidgetState();
+
+  const [pollFormIsShown, setPollFormIsShownn] = useState(false);
+
+  const [pollModalIsShown, setPollModalIsShown] = useState(false);
+  const [pollNotificationData, setPollNotificationData] = useState();
+
+  const showPollFormHandler = () => {
+    setPollFormIsShownn(true);
+  };
+
+  const hidePollFormHandler = () => {
+    setPollFormIsShownn(false);
+  };
+
+  const showPollModalHandler = () => {
+    setPollModalIsShown(true);
+  };
 
   useEffect(() => {
     window.onunload = () => {
@@ -22,68 +48,39 @@ export default function App() {
     };
   }, [hmsActions, isConnected]);
 
-  const handleCreate = async (id) => {
-    console.log("POLL CREATED with ${id}");
-    await hmsActions.interactivityCenter.addQuestionsToPoll(id, [
-      {
-        text: "Vote for your favourite creator",
-        type: "single-choice",
-        options: [
-          {
-            text: "Aditya ",
-            isCorrectAnswer: false,
-          },
-          {
-            text: "Thakur ",
-            isCorrectAnswer: false,
-          },
-        ],
-        skippable: true,
-      },
-      // {
-      //   text: "Who is u?",
-      //   type: "single-choice",
-      //   options: [
-      //     {
-      //       text: "u ",
-      //       isCorrectAnswer: false,
-      //     },
-      //     {
-      //       text: "me",
-      //       isCorrectAnswer: false,
-      //     },
-      //   ],
-      //   skippable: true,
-      // },
-    ]);
-    await hmsActions.interactivityCenter.startPoll(id);
-  };
+  useEffect(() => {
+    if (!notification) {
+      return;
+    }
+    switch (notification.type) {
+      case HMSNotificationTypes.POLL_STARTED:
+        if (notification.data.startedBy !== localPeerID) {
+          console.log("NOTIFICATION RECEIVED");
+          console.log(notification.data);
+          setPollNotificationData(notification.data);
+          toast(`A new Poll is available: ${notification.data.title}!`);
+        }
+        break;
+      default:
+        break;
+    }
+  }, [notification]);
 
   return (
     <div className="App">
       {isConnected ? (
         <>
+          <ToastContainer />
+          {pollFormIsShown && <PollForm onClose={hidePollFormHandler} />}
+          {pollModalIsShown && (
+            <ViewPoll pollNotificationData={pollNotificationData} />
+          )}
           <Conference />
           <Footer />
-          <Button
-            variant="primary"
-            css={{ mt: "$10" }}
-            onClick={async () => {
-              const id = Date.now().toString();
-              await hmsActions.interactivityCenter
-                .createPoll({
-                  id,
-                  title: "Big Boss Inspired Poll",
-                  type: "poll",
-
-                  rolesThatCanViewResponses: ["host"],
-                })
-                .then(() => handleCreate(id))
-                .catch((err) => console.log(err.message));
-            }}
-          >
-            Create
-          </Button>
+          <div className="poll-div">
+            <Button onClick={showPollFormHandler}>Create Poll</Button>
+            <Button onClick={showPollModalHandler}>View Poll</Button>
+          </div>
           {/* <Voting toggleVoting={toggleWidget} id={pollID} /> */}
         </>
       ) : (

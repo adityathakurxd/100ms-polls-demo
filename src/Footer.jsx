@@ -1,12 +1,8 @@
 import { useAVToggle } from "@100mslive/react-sdk";
 
 function Footer() {
-  const {
-    isLocalAudioEnabled,
-    isLocalVideoEnabled,
-    toggleAudio,
-    toggleVideo
-  } = useAVToggle();
+  const { isLocalAudioEnabled, isLocalVideoEnabled, toggleAudio, toggleVideo } =
+    useAVToggle();
   return (
     <div className="control-bar">
       <button className="btn-control" onClick={toggleAudio}>
