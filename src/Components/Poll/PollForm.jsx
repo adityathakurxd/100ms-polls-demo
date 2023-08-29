@@ -3,6 +3,8 @@ import { Button } from "@100mslive/roomkit-react";
 import { useState } from "react";
 import { useHMSActions } from "@100mslive/react-sdk";
 import "../../styles.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PollForm = (props) => {
   const hmsActions = useHMSActions();
@@ -28,6 +30,7 @@ const PollForm = (props) => {
       },
     ]);
     await hmsActions.interactivityCenter.startPoll(id);
+    toast(`Poll has started!`);
   };
 
   const handleChange = (event) => {

@@ -73,7 +73,10 @@ export default function App() {
           <ToastContainer />
           {pollFormIsShown && <PollForm onClose={hidePollFormHandler} />}
           {pollModalIsShown && (
-            <ViewPoll pollNotificationData={pollNotificationData} />
+            <ViewPoll
+              pollNotificationData={pollNotificationData}
+              onClose={hidePollFormHandler}
+            />
           )}
           <Conference />
           <Footer />
