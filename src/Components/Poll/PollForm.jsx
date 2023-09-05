@@ -31,6 +31,7 @@ const PollForm = (props) => {
     ]);
     await hmsActions.interactivityCenter.startPoll(id);
     toast(`Poll has started!`);
+    props.onClose();
   };
 
   const handleChange = (event) => {

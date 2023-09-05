@@ -27,6 +27,7 @@ const ViewPoll = (props) => {
     );
 
     toast(`Vote done!`);
+    props.onClose();
   };
 
   return (
