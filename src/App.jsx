@@ -40,6 +40,10 @@ export default function App() {
     setPollModalIsShown(true);
   };
 
+  const hidePollModalHandler = () => {
+    setPollFormIsShownn(false);
+  };
+
   useEffect(() => {
     window.onunload = () => {
       if (isConnected) {
@@ -75,7 +79,7 @@ export default function App() {
           {pollModalIsShown && (
             <ViewPoll
               pollNotificationData={pollNotificationData}
-              onClose={hidePollFormHandler}
+              onClose={hidePollModalHandler}
             />
           )}
           <Conference />
