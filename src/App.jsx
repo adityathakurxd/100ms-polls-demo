@@ -41,7 +41,7 @@ export default function App() {
   };
 
   const hidePollModalHandler = () => {
-    setPollFormIsShownn(false);
+    setPollModalIsShown(false);
   };
 
   useEffect(() => {
